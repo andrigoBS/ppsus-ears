@@ -1,0 +1,9 @@
+[submodule "ppsus-ears-react"]
+	path = ppsus-ears-react
+	url = git@github.com:andrigoBS/ppsus-ears-react.git
+[submodule "ppsus-ears-native"]
+	path = ppsus-ears-native
+	url = git@github.com:andrigoBS/ppsus-ears-native.git
+[submodule "ppsus-ears-node"]
+	path = ppsus-ears-node
+	url = git@github.com:andrigoBS/ppsus-ears-node.git
