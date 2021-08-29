@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  ##### node api #####
+  node:
+    container_name: node
+    build:
+      context: ./ppsus-ears-node
+      dockerfile: Dockerfile
+    restart: always
+    command: dumb-init npm start
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./ppsus-ears-node/:/usr/src/node/
+    networks:
+      - ppsus_net
+  #### react production build ####
+  react:
+    container_name: react
+    build:
+      context: ./ppsus-ears-react
+      dockerfile: Dockerfile
+    restart: always
+    command: npm run watch
+    volumes:
+      - ./ppsus-ears-react/:/usr/src/react/
+    networks:
+      - ppsus_net
+  server:
+    container_name: server
+    image: nginx:stable-alpine
+    working_dir: /usr
+    restart: always
+    command:  [nginx-debug, '-g', 'daemon off;']
+    ports:
+      - "3000:80"
+    environment:
+#      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    volumes:
+      - ./ppsus-ears-react/build/:/usr/share/nginx/html/
+    networks:
+      - ppsus_net
+  #### Data base ####
+
+#### Internal Container Connection ####
+networks:
+  ppsus_net:
+    driver: bridge
