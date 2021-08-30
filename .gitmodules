@@ -7,3 +7,6 @@
 [submodule "ppsus-ears-node"]
 	path = ppsus-ears-node
 	url = git@github.com:andrigoBS/ppsus-ears-node.git
+[submodule "ppsus-ears-database"]
+	path = ppsus-ears-database
+	url = git@github.com:andrigoBS/ppsus-ears-database.git
