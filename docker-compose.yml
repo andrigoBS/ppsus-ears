@@ -1,16 +1,16 @@
-version: "3.8"
+version: "3.9"
 
 volumes:
   postgres_data:
-  pgadmin_data:
+  node_modules_cache:
+  react_modules_cache:
 
 services:
   #### react production build ####
   react:
     container_name: react
-    build:
-      context: ./ppsus-ears-react
-      dockerfile: Dockerfile
+    image: node:lts-alpine
+    working_dir: /usr/src/react
     restart: always
     command: npm run build:watch
     environment:
@@ -20,9 +20,7 @@ services:
       - ./ppsus-ears-react/:/usr/src/react/
       - ./ppsus-ears-react/package-lock.json:/usr/src/react/package-lock.json
       - ./ppsus-ears-react/package.json:/usr/src/react/package.json
-      - /usr/src/react/node_modules
-    networks:
-      - ppsus_net
+      - react_modules_cache:/usr/src/react/node_modules
   server:
     container_name: server
     image: nginx:stable-alpine
@@ -65,43 +63,25 @@ services:
       - ./ppsus-ears-node/:/usr/src/node/
       - ./ppsus-ears-node/package-lock.json:/usr/src/node/package-lock.json
       - ./ppsus-ears-node/package.json:/usr/src/node/package.json
-      - /usr/src/node/node_modules
+      - node_modules_cache:/usr/src/node/node_modules
     networks:
       - ppsus_net
   ########################################################
   #### Data base ####
-  postgres:
-    container_name: postgres
-    image: postgres:alpine
-    restart: on-failure
-    environment:
-      POSTGRES_DB: "${DATABASE_NAME}"
-      POSTGRES_USER: "${DATABASE_USER}"
-      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
-    ports:
-      - "8103:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    networks:
-      - ppsus_net
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4:latest
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_EMAIL}"
-      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD}"
-      PGADMIN_ENABLE_TLS: "true"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin/
-      - ./ppsus-ears-database/pgadmin/sever.cert:/certs/server.cert
-      - ./ppsus-ears-database/pgadmin/sever.key:/certs/server.key
-      - ./ppsus-ears-database/pgadmin/servers.json:/servers.json
-    ports:
-      - "8104:443"
-    depends_on:
-      - postgres
-    networks:
-      - ppsus_net
+#  postgres:
+#    container_name: postgres
+#    image: postgres:alpine
+#    restart: on-failure
+#    environment:
+#      POSTGRES_DB: "${DATABASE_NAME}"
+#      POSTGRES_USER: "${DATABASE_USER}"
+#      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
+#    ports:
+#      - "8103:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data/
+#    networks:
+#      - ppsus_net
 #### Internal Container Connection ####
 networks:
   ppsus_net:

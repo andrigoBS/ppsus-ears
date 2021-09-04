@@ -1,14 +1,5 @@
 # ppsus-ears
 
-### Dependencies
-- docker: 20.10.8
-- docker-compose: 1.29.2
-
-### Instalation
-- **1.** Copy **".env.exemple"**, save with name **".env"** and configure yours environment variables. \
-- **2.** run `docker-compose up --build`
-- **For stop.** run `docker-compose down`
-
 ### Git commands
 - git clone --recurse-submodules
 - git submodule update --remote <nome-do-submódulo>
