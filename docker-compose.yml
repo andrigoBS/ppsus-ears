@@ -4,55 +4,24 @@ volumes:
   mysql-data:
 
 services:
-  #### react production build teste ####
-#  react-build:
-#    image: node:lts-alpine
-#    working_dir: /usr/src/react
-#    restart: always
-#    command: sh -c "npm install && npm run build"
-#    environment:
-#      REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
-#      REACT_APP_SERVER_URL: "${HOST_NAME}:${NODE_PORT}"
-#      REACT_APP_HOST_NAME: "${HOST_NAME}:${REACT_PORT}"
-#    volumes:
-#      - ./ppsus-ears-react:/usr/src/react
-#    stdin_open: true
-#  react-server:
-#    image: nginx:stable-alpine
-#    working_dir: /usr
-#    restart: always
-#    command: [nginx-debug, '-g', 'daemon off;']
-#    ports:
-#      - "${REACT_PORT}:80"
-#    environment:
-#      NGINX_HOST: "${HOST_NAME}"
-#      NGINX_PORT: 80
-#    volumes:
-#      - ./ppsus-ears-react/build/:/usr/share/nginx/html/
-#    depends_on:
-#      - react-build
-#    networks:
-#      - ppsus_net
   #### react Develop build ####
   react:
-    image: node:lts-alpine
-    working_dir: /usr/src/react
+    build:
+      context: ./ppsus-ears-react
+      target: dev
     restart: always
-    command: sh -c "npm install && npm start"
     ports:
       - "${REACT_PORT}:3000"
     environment:
       REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
       REACT_APP_SERVER_URL: "${HOST_NAME}:${NODE_PORT}"
       REACT_APP_HOST_NAME: "${HOST_NAME}:${REACT_PORT}"
-      NODE_ENV: "development"
       CHOKIDAR_USEPOLLING: "true"
     volumes:
       - ./ppsus-ears-react/src/:/usr/src/react/src/
       - ./ppsus-ears-react/public/:/usr/src/react/public/
       - ./ppsus-ears-react/package.json:/usr/src/react/package.json
       - ./ppsus-ears-react/package-lock.json:/usr/src/react/package-lock.json
-      - ./ppsus-ears-react/node_modules/:/usr/src/react/node_modules/
     stdin_open: true
     networks:
       - ppsus_net
@@ -60,10 +29,10 @@ services:
   #########################################################
   ##### node api #####
   node:
-    image: node:lts-alpine
-    working_dir: /usr/src/app
+    build:
+      context: ./ppsus-ears-node
+      target: dev
     restart: always
-    command: sh -c "npm install && npm run dev"
     environment:
       SERVER_NAME: "${PROJECT_NAME}"
       SERVER_HOST: "${HOST_NAME}"
@@ -80,8 +49,11 @@ services:
       TYPEORM_SYNCHRONIZE: "true"
       TYPEORM_LOGGING: "true"
     volumes:
-      - ./ppsus-ears-node/:/usr/src/app/
-      - ./ppsus-ears-node/node_modules/:/usr/src/app/node_modules/
+      - ./ppsus-ears-node/src/:/usr/src/node/src/
+      - ./ppsus-ears-node/public/:/usr/src/node/public/
+      - ./ppsus-ears-node/package.json:/usr/src/node/package.json
+      - ./ppsus-ears-node/package-lock.json:/usr/src/node/package-lock.json
+      - ./ppsus-ears-node/tsconfig.json:/usr/src/node/tsconfig.json
     ports:
       - "${NODE_PORT}:${NODE_PORT}"
     networks:
