@@ -45,8 +45,8 @@ services:
       REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
       REACT_APP_SERVER_URL: "${HOST_NAME}:${NODE_PORT}"
       REACT_APP_HOST_NAME: "${HOST_NAME}:${REACT_PORT}"
-      NODE_ENV: development
-      CHOKIDAR_USEPOLLING: true
+      NODE_ENV: "development"
+      CHOKIDAR_USEPOLLING: "true"
     volumes:
       - ./ppsus-ears-react/src/:/usr/src/react/src/
       - ./ppsus-ears-react/public/:/usr/src/react/public/
@@ -60,29 +60,28 @@ services:
   #########################################################
   ##### node api #####
   node:
-    build:
-      context: ./ppsus-ears-node
-      dockerfile: Dockerfile
-      target: dev
+    image: node:lts-alpine
+    working_dir: /usr/src/app
     restart: always
-    command: npm run dev
+    command: sh -c "npm install && npm run dev"
     environment:
       SERVER_NAME: "${PROJECT_NAME}"
       SERVER_HOST: "${HOST_NAME}"
       SERVER_PORT: "${NODE_PORT}"
-      TYPEORM_CONNECTION: mysql
+      TYPEORM_CONNECTION: "mysql"
       TYPEORM_HOST: "${HOST_NAME}"
       TYPEORM_PORT: "${DATABASE_PORT}"
       TYPEORM_DATABASE: "${DATABASE_NAME}"
       TYPEORM_USERNAME: "${DATABASE_USER}"
       TYPEORM_PASSWORD: "${DATABASE_PASSWORD}"
-      TYPEORM_ENTITIES: build/src/entity/**/*.js
-      TYPEORM_ENTITIES_DIR: src/entity
-      TYPEORM_MIGRATIONS_DIR: src/migration
-      TYPEORM_SYNCHRONIZE: true
-      TYPEORM_LOGGING: true
+      TYPEORM_ENTITIES: "build/src/entity/**/*.js"
+      TYPEORM_ENTITIES_DIR: "src/entity"
+      TYPEORM_MIGRATIONS_DIR: "src/migration"
+      TYPEORM_SYNCHRONIZE: "true"
+      TYPEORM_LOGGING: "true"
     volumes:
       - ./ppsus-ears-node/:/usr/src/app/
+      - ./ppsus-ears-node/node_modules/:/usr/src/app/node_modules/
     ports:
       - "${NODE_PORT}:${NODE_PORT}"
     networks:
