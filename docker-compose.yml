@@ -1,88 +1,109 @@
 version: "3.9"
 
 volumes:
-  postgres_data:
-  node_modules_cache:
-  react_modules_cache:
+  mysql-data:
 
 services:
-  #### react production build ####
+  #### react production build teste ####
+#  react-build:
+#    image: node:lts-alpine
+#    working_dir: /usr/src/react
+#    restart: always
+#    command: sh -c "npm install && npm run build"
+#    environment:
+#      REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
+#      REACT_APP_SERVER_URL: "${HOST_NAME}:${NODE_PORT}"
+#      REACT_APP_HOST_NAME: "${HOST_NAME}:${REACT_PORT}"
+#    volumes:
+#      - ./ppsus-ears-react:/usr/src/react
+#    stdin_open: true
+#  react-server:
+#    image: nginx:stable-alpine
+#    working_dir: /usr
+#    restart: always
+#    command: [nginx-debug, '-g', 'daemon off;']
+#    ports:
+#      - "${REACT_PORT}:80"
+#    environment:
+#      NGINX_HOST: "${HOST_NAME}"
+#      NGINX_PORT: 80
+#    volumes:
+#      - ./ppsus-ears-react/build/:/usr/share/nginx/html/
+#    depends_on:
+#      - react-build
+#    networks:
+#      - ppsus_net
+  #### react Develop build ####
   react:
-    container_name: react
     image: node:lts-alpine
     working_dir: /usr/src/react
     restart: always
-    command: npm run build:watch
-    environment:
-      PROJECT_NAME: "${PROJECT_NAME}"
-      SERVER_URL: "${HOST_NAME}:8102"
-    volumes:
-      - ./ppsus-ears-react/:/usr/src/react/
-      - ./ppsus-ears-react/package-lock.json:/usr/src/react/package-lock.json
-      - ./ppsus-ears-react/package.json:/usr/src/react/package.json
-      - react_modules_cache:/usr/src/react/node_modules
-  server:
-    container_name: server
-    image: nginx:stable-alpine
-    working_dir: /usr
-    restart: always
-    command:  [nginx-debug, '-g', 'daemon off;']
+    command: sh -c "npm install && npm start"
     ports:
-      - "8101:80"
+      - "${REACT_PORT}:3000"
     environment:
-      NGINX_HOST: "${HOST_NAME}"
-      NGINX_PORT: 80
+      REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
+      REACT_APP_SERVER_URL: "${HOST_NAME}:${NODE_PORT}"
+      REACT_APP_HOST_NAME: "${HOST_NAME}:${REACT_PORT}"
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: true
     volumes:
-      - ./ppsus-ears-react/build/:/usr/share/nginx/html/
-    depends_on:
-      - react
+      - ./ppsus-ears-react/src/:/usr/src/react/src/
+      - ./ppsus-ears-react/public/:/usr/src/react/public/
+      - ./ppsus-ears-react/package.json:/usr/src/react/package.json
+      - ./ppsus-ears-react/package-lock.json:/usr/src/react/package-lock.json
+      - ./ppsus-ears-react/node_modules/:/usr/src/react/node_modules/
+    stdin_open: true
     networks:
       - ppsus_net
+
   #########################################################
   ##### node api #####
   node:
-    container_name: node
     build:
       context: ./ppsus-ears-node
       dockerfile: Dockerfile
+      target: dev
     restart: always
-    command: dumb-init npm start
+    command: npm run dev
     environment:
-      SERVER_NAME : "${PROJECT_NAME} - node"
-      SERVER_HOST : "${HOST_NAME}"
-      SERVER_PORT : 8102
-      DATABASE_DIALECT : 'postgress'
-      DATABASE_HOST : 'postgress'
-      DATABASE_PORT : 5432
-      DATABASE_NAME : "${DATABASE_NAME}"
-      DATABASE_USER : "${DATABASE_USER}"
-      DATABASE_PASSWORD : "${DATABASE_PASSWORD}"
-    ports:
-      - "8102:8102"
+      SERVER_NAME: "${PROJECT_NAME}"
+      SERVER_HOST: "${HOST_NAME}"
+      SERVER_PORT: "${NODE_PORT}"
+      TYPEORM_CONNECTION: mysql
+      TYPEORM_HOST: "${HOST_NAME}"
+      TYPEORM_PORT: "${DATABASE_PORT}"
+      TYPEORM_DATABASE: "${DATABASE_NAME}"
+      TYPEORM_USERNAME: "${DATABASE_USER}"
+      TYPEORM_PASSWORD: "${DATABASE_PASSWORD}"
+      TYPEORM_ENTITIES: build/src/entity/**/*.js
+      TYPEORM_ENTITIES_DIR: src/entity
+      TYPEORM_MIGRATIONS_DIR: src/migration
+      TYPEORM_SYNCHRONIZE: true
+      TYPEORM_LOGGING: true
     volumes:
-      - ./ppsus-ears-node/:/usr/src/node/
-      - ./ppsus-ears-node/package-lock.json:/usr/src/node/package-lock.json
-      - ./ppsus-ears-node/package.json:/usr/src/node/package.json
-      - node_modules_cache:/usr/src/node/node_modules
+      - ./ppsus-ears-node/:/usr/src/app/
+    ports:
+      - "${NODE_PORT}:${NODE_PORT}"
     networks:
       - ppsus_net
-  ########################################################
-  #### Data base ####
-#  postgres:
-#    container_name: postgres
-#    image: postgres:alpine
-#    restart: on-failure
-#    environment:
-#      POSTGRES_DB: "${DATABASE_NAME}"
-#      POSTGRES_USER: "${DATABASE_USER}"
-#      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
-#    ports:
-#      - "8103:5432"
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data/
-#    networks:
-#      - ppsus_net
-#### Internal Container Connection ####
+
+  #########################################################
+  ##### mysql #####
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: "${DATABASE_NAME}"
+      MYSQL_USER: "${DATABASE_USER}"
+      MYSQL_PASSWORD: "${DATABASE_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD}"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "${DATABASE_PORT}:3306"
+    networks:
+      - ppsus_net
 networks:
   ppsus_net:
     driver: bridge
