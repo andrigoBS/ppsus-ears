@@ -6,37 +6,38 @@ volumes:
 services:
   #### react Develop build ####
   react:
-    build:
-      context: ./ppsus-ears-react
-      target: dev
+    image: node:lts-alpine
+    working_dir: /usr/src/react
     restart: always
     ports:
       - "${REACT_PORT}:3000"
+    command: sh -c "npm install && npm start"
     environment:
       REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
       REACT_APP_SERVER_URL: "${HOST_NAME}:${NODE_PORT}"
       REACT_APP_HOST_NAME: "${HOST_NAME}:${REACT_PORT}"
-      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_USEPOLLING: true
+      NODE_ENV: "development"
     volumes:
       - ./ppsus-ears-react/src/:/usr/src/react/src/
       - ./ppsus-ears-react/public/:/usr/src/react/public/
       - ./ppsus-ears-react/package.json:/usr/src/react/package.json
       - ./ppsus-ears-react/package-lock.json:/usr/src/react/package-lock.json
+      - ./ppsus-ears-react/node_modules/:/usr/src/react/node_modules/
     stdin_open: true
     networks:
       - ppsus_net
 
-  #########################################################
   ##### node api #####
   node:
-    build:
-      context: ./ppsus-ears-node
-      target: dev
+    image: node:lts-alpine
+    working_dir: /usr/src/node
     restart: always
     environment:
       SERVER_NAME: "${PROJECT_NAME}"
       SERVER_HOST: "${HOST_NAME}"
       SERVER_PORT: "${NODE_PORT}"
+      JWT_SECRET: "${JWT_SECRET}"
       TYPEORM_CONNECTION: "mysql"
       TYPEORM_HOST: "${HOST_NAME}"
       TYPEORM_PORT: "${DATABASE_PORT}"
@@ -48,18 +49,20 @@ services:
       TYPEORM_MIGRATIONS_DIR: "src/migration"
       TYPEORM_SYNCHRONIZE: "true"
       TYPEORM_LOGGING: "true"
+      NODE_ENV: "development"
+    command: sh -c "npm install && npm run dev"
     volumes:
       - ./ppsus-ears-node/src/:/usr/src/node/src/
       - ./ppsus-ears-node/public/:/usr/src/node/public/
       - ./ppsus-ears-node/package.json:/usr/src/node/package.json
       - ./ppsus-ears-node/package-lock.json:/usr/src/node/package-lock.json
       - ./ppsus-ears-node/tsconfig.json:/usr/src/node/tsconfig.json
+      - ./ppsus-ears-node/node_modules/:/usr/src/node/node_modules/
     ports:
       - "${NODE_PORT}:${NODE_PORT}"
     networks:
       - ppsus_net
 
-  #########################################################
   ##### mysql #####
   mysql:
     image: mysql
@@ -75,6 +78,10 @@ services:
       - "${DATABASE_PORT}:3306"
     networks:
       - ppsus_net
+
 networks:
   ppsus_net:
     driver: bridge
+    ipam:
+      config:
+        - subnet: "${HOST_NAME}/24"
