@@ -4,6 +4,21 @@ volumes:
   mysql-data:
 
 services:
+  #### react local prod build ####
+#  react-prod:
+#    build:
+#      context: ppsus-ears-react
+#      dockerfile: Dockerfile
+#    restart: always
+#    ports:
+#      - "8104:80"
+#    environment:
+#      - REACT_APP_PROJECT_NAME=${PROJECT_NAME}
+#      - REACT_APP_SERVER_URL=${HOST_NAME}:${NODE_PORT}
+#      - REACT_APP_HOST_NAME=${HOST_NAME}
+#    networks:
+#      - ppsus_net
+
   #### react Develop build ####
   react:
     image: node:lts-alpine
