@@ -13,11 +13,11 @@ services:
       - "${REACT_PORT}:3000"
     command: sh -c "npm install && npm start"
     environment:
-      REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
-      REACT_APP_SERVER_URL: "${HOST_NAME}:${NODE_PORT}"
-      REACT_APP_HOST_NAME: "${HOST_NAME}:${REACT_PORT}"
-      CHOKIDAR_USEPOLLING: true
-      NODE_ENV: "development"
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
+      - REACT_APP_PROJECT_NAME=${PROJECT_NAME}
+      - REACT_APP_SERVER_URL=${HOST_NAME}:${NODE_PORT}
+      - REACT_APP_HOST_NAME=${HOST_NAME}:${REACT_PORT}
     volumes:
       - ./ppsus-ears-react/src/:/usr/src/react/src/
       - ./ppsus-ears-react/public/:/usr/src/react/public/
