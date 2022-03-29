@@ -16,7 +16,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=development
       - REACT_APP_PROJECT_NAME=${PROJECT_NAME}
-      - REACT_APP_SERVER_URL=${HOST_NAME}:${NODE_PORT}
+      - REACT_APP_SERVER_URL=http://localhost:${NODE_PORT}
       - REACT_APP_HOST_NAME=${HOST_NAME}:${REACT_PORT}
     volumes:
       - ./ppsus-ears-react/src/:/usr/src/react/src/
