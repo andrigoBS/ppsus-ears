@@ -18,8 +18,9 @@ desses casos.
 ## Autores
 O presente código foi implementado por:
 * [Andrigo B. Santos](https://github.com/andrigoBS)
-* [Gabriel Burich](https://github.com/gabrielburich)
+* [Gabriel A. Souza](https://github.com/Souza-gabriel)
 * [Hilson A. W. Junior](https://github.com/Hilson-Alex)
+* [Karoline S. Guckert](https://github.com/karolineguckert)
 
 ## Links
 **Como instalar o wsl do windows para rodar o docker via wsl**
