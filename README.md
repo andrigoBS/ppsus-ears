@@ -15,6 +15,12 @@ desses casos.
 - E rode com `docker-compose up`
 - Ou se preferir use `docker-compose up --build` para "buildar" antes de rodar
 
+## Autores
+O presente código foi implementado por:
+* [Andrigo B. Santos](https://github.com/andrigoBS)
+* [Gabriel Burich](https://github.com/gabrielburich)
+* [Hilson A. W. Junior](https://github.com/Hilson-Alex)
+
 ## Links
 **Como instalar o wsl do windows para rodar o docker via wsl**
 - https://docs.microsoft.com/pt-br/windows/wsl/install-win10#step-4---download-the-linux-kernel-update-package
