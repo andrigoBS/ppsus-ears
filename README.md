@@ -3,22 +3,19 @@ Projeto de cunho social, visando acompanhar bêbes que testam negativo no teste 
 é pensada para ajudar pais, fonoaudiologas, orgãos governamentais e hospitais terem um maior controle e acompanhamento
 desses casos.
 
+## Submódulos
+- ppsus-ears-native: projeto futuro de aplicativo nativo
+- ppsus-ears-node: projeto de backend da plataforma
+- ppsus-ears-react: projeto de frontend da plataforma
+
 ### Git commands
 - git clone --recurse-submodules
 - git submodule update --remote <nome-do-submódulo>
 - git submodule update --init --recursive
 
-### Instalação do ambiente de desenvolvimento com docker
-- Duplique o arquivo .env.exemple removendo .exemple
-- Configure os parametros como desejar, obs host_name deve ser um ipv4
-- Instale o projeto usando `docker-compose build` 
-- E rode com `docker-compose up`
-- Ou se preferir use `docker-compose up --build` para "buildar" antes de rodar
-
 ## Autores
 O presente código foi implementado por:
 * [Andrigo B. Santos](https://github.com/andrigoBS)
-* [Gabriel A. Souza](https://github.com/Souza-gabriel)
 * [Hilson A. W. Junior](https://github.com/Hilson-Alex)
 * [Karoline S. Guckert](https://github.com/karolineguckert)
 
