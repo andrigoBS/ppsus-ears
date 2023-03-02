@@ -11,45 +11,49 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "8104:80"
+      - "${REACT_PORT}:80"
     environment:
-      - REACT_APP_PROJECT_NAME=${PROJECT_NAME}
-      - REACT_APP_SERVER_URL=${HOST_NAME}:8105
-      - REACT_APP_HOST_NAME=${HOST_NAME}
+      REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
+      REACT_APP_SERVER_URL: "node-prod"
+      REACT_APP_HOST_NAME: "${HOST_NAME}"
+    depends_on:
+      - node-prod
     networks:
       - ppsus_net
 
-  #### react local prod build ####
+  #### node local prod ####
   node-prod:
     build:
       context: ppsus-ears-node
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "8105:80"
+      - "${NODE_PORT}:${NODE_PORT}"
     environment:
       SERVER_NAME: "${PROJECT_NAME}"
       SERVER_HOST: "${HOST_NAME}"
-      SERVER_PORT: "80"
+      SERVER_PORT: "${NODE_PORT}"
       JWT_SECRET: "${JWT_SECRET}"
       TYPEORM_CONNECTION: "mysql"
-      TYPEORM_HOST: "${HOST_NAME}"
-      TYPEORM_PORT: "8106"
+      TYPEORM_HOST: "mysql-prod"
       TYPEORM_DATABASE: "${DATABASE_NAME}"
       TYPEORM_USERNAME: "${DATABASE_USER}"
       TYPEORM_PASSWORD: "${DATABASE_PASSWORD}"
       TYPEORM_ENTITIES: "src/entity/**/*.js"
       TYPEORM_MIGRATIONS: "src/migration/**/*.js"
-      TYPEORM_MIGRATIONS_RUN: "true"
+      TYPEORM_MIGRATIONS_RUN: "false"
       TYPEORM_SYNCHRONIZE: "true"
+    depends_on:
+      - mysql-prod
     networks:
       - ppsus_net
 
-  ##### mysql #####
+  ##### mysql local prod #####
   mysql-prod:
     image: mysql
     restart: always
     environment:
+      MYSQL_HOST: "%"
       MYSQL_DATABASE: "${DATABASE_NAME}"
       MYSQL_USER: "${DATABASE_USER}"
       MYSQL_PASSWORD: "${DATABASE_PASSWORD}"
@@ -57,13 +61,10 @@ services:
     volumes:
       - mysql-prod-data:/var/lib/mysql
     ports:
-      - "8106:3306"
+      - "${DATABASE_PORT}:3306"
     networks:
       - ppsus_net
 
 networks:
   ppsus_net:
     driver: bridge
-    ipam:
-      config:
-        - subnet: "${HOST_NAME}/24"

@@ -13,11 +13,11 @@ services:
       - "${REACT_PORT}:3000"
     command: sh -c "npm install && npm start"
     environment:
-      - CHOKIDAR_USEPOLLING=true
-      - NODE_ENV=development
-      - REACT_APP_PROJECT_NAME=${PROJECT_NAME}
-      - REACT_APP_SERVER_URL=http://localhost:${NODE_PORT}
-      - REACT_APP_HOST_NAME=${HOST_NAME}:${REACT_PORT}
+      CHOKIDAR_USEPOLLING: "true"
+      NODE_ENV: "development"
+      REACT_APP_PROJECT_NAME: "${PROJECT_NAME}"
+      REACT_APP_SERVER_URL: "localhost:${NODE_PORT}"
+      REACT_APP_HOST_NAME: "${HOST_NAME}:${REACT_PORT}"
     volumes:
       - ./ppsus-ears-react/src/:/usr/src/react/src/
       - ./ppsus-ears-react/public/:/usr/src/react/public/
@@ -25,6 +25,8 @@ services:
       - ./ppsus-ears-react/package-lock.json:/usr/src/react/package-lock.json
       - ./ppsus-ears-react/node_modules/:/usr/src/react/node_modules/
     stdin_open: true
+    depends_on:
+      - node
     networks:
       - ppsus_net
 
@@ -39,8 +41,7 @@ services:
       SERVER_PORT: "${NODE_PORT}"
       JWT_SECRET: "${JWT_SECRET}"
       TYPEORM_CONNECTION: "mysql"
-      TYPEORM_HOST: "${HOST_NAME}"
-      TYPEORM_PORT: "${DATABASE_PORT}"
+      TYPEORM_HOST: "mysql"
       TYPEORM_DATABASE: "${DATABASE_NAME}"
       TYPEORM_USERNAME: "${DATABASE_USER}"
       TYPEORM_PASSWORD: "${DATABASE_PASSWORD}"
@@ -59,6 +60,8 @@ services:
       - ./ppsus-ears-node/node_modules/:/usr/src/node/node_modules/
     ports:
       - "${NODE_PORT}:${NODE_PORT}"
+    depends_on:
+      - mysql-prod
     networks:
       - ppsus_net
 
@@ -67,6 +70,7 @@ services:
     image: mysql
     restart: always
     environment:
+      MYSQL_HOST: "%"
       MYSQL_DATABASE: "${DATABASE_NAME}"
       MYSQL_USER: "${DATABASE_USER}"
       MYSQL_PASSWORD: "${DATABASE_PASSWORD}"
@@ -81,6 +85,3 @@ services:
 networks:
   ppsus_net:
     driver: bridge
-    ipam:
-      config:
-        - subnet: "${HOST_NAME}/24"
