@@ -40,9 +40,11 @@ services:
       TYPEORM_USERNAME: "${DATABASE_USER}"
       TYPEORM_PASSWORD: "${DATABASE_PASSWORD}"
       TYPEORM_ENTITIES: "src/entity/**/*.js"
+      TYPEORM_ENTITIES_DIR: "src/entity"
       TYPEORM_MIGRATIONS: "src/migration/**/*.js"
+      TYPEORM_MIGRATIONS_DIR: "src/migration"
       TYPEORM_MIGRATIONS_RUN: "false"
-      TYPEORM_SYNCHRONIZE: "true"
+      TYPEORM_SYNCHRONIZE: "false"
     depends_on:
       - mysql-prod
     networks:
